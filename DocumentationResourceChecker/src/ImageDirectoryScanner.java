@@ -11,10 +11,11 @@ class ImageDirectoryScanner {
     private static final Set<String> IMAGE_EXT = Set.of("png", "jpg", "jpeg", "gif", "svg");
 
     /**
-     * Сканирует директорию и возвращает набор относительных путей ко всем файлам-изображениям.
+     * Сканирует директорию и возвращает набор нормализованных путей ко всем файлам-изображениям.
+     * Нормализует пути, чтобы они содержали только конечную папку и имя файла.
      *
      * @param imagesDir корневая директория с изображениями
-     * @return набор путей к изображениям
+     * @return набор путей к изображениям (в формате "папка/файл.расширение" или "файл.расширение")
      * @throws IOException при ошибках ввода-вывода
      */
     public static Set<String> scanImages(Path imagesDir) throws IOException {
@@ -28,7 +29,28 @@ class ImageDirectoryScanner {
                     if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
                         String ext = fileName.substring(dotIndex + 1).toLowerCase();
                         if (IMAGE_EXT.contains(ext)) {
-                            images.add(imagesDir.relativize(path).toString().replace("\\", "/"));
+                            // Получаем относительный путь от imagesDir
+                            Path relativePath = imagesDir.relativize(path);
+
+                            // Получаем имя файла
+                            String imgFileName = relativePath.getFileName().toString();
+
+                            // Получаем имя родительской папки, если она есть
+                            Path parent = relativePath.getParent();
+                            String folderName = "";
+                            if (parent != null && parent.getNameCount() > 0) {
+                                // Берем только последний компонент родительской папки
+                                folderName = parent.getFileName().toString();
+                            }
+
+                            // Собираем нормализованный ключ для сравнения
+                            String normalizedKey;
+                            if (!folderName.isEmpty()) {
+                                normalizedKey = folderName + "/" + imgFileName;
+                            } else {
+                                normalizedKey = imgFileName;
+                            }
+                            images.add(normalizedKey);
                         }
                     }
                 });
