@@ -12,7 +12,7 @@ class MdResourceParser {
     // Обновленное регулярное выражение для поиска путей:
     // 1. ![alt](path)
     // 2. <img src="path">
-    // 3. <Image src="path"> (для кастомного компонента)
+    // 3. <Image src="path">
     private static final Pattern MD_IMG_PATTERN =
             Pattern.compile("!\\[.*?\\]\\((.*?)\\)|<img\\s+[^>]*src=[\"'](.*?)[\"'][^>]*>|<Image\\s+[^>]*src=[\"'](.*?)[\"'][^>]*>");
 

@@ -6,19 +6,23 @@ import java.util.TreeSet;
 
 public class DocumentationResourceChecker {
 
+    static final String MD_PATH = "D:\\work\\repo\\g5rt-docs\\docs";
+    static final String IMG_PATH = "D:\\work\\repo\\g5rt-docs\\docs\\img";
+    static final String OUT_PATH = "D:\\work\\tmp\\checker_out";
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+//        Scanner scanner = new Scanner(System.in);
 
         System.out.println("=== Анализ документации ===");
 
-        System.out.print("Введите путь к директории с .md и .mdx файлами: ");
-        Path docsPath = Paths.get(scanner.nextLine().trim());
+//        System.out.print("Введите путь к директории с .md и .mdx файлами: ");
+        Path docsPath = Paths.get(MD_PATH);
 
-        System.out.print("Введите путь к директории с изображениями: ");
-        Path imagesPath = Paths.get(scanner.nextLine().trim());
+//        System.out.print("Введите путь к директории с изображениями: ");
+        Path imagesPath = Paths.get(IMG_PATH);
 
-        System.out.print("Введите путь к выходной директории (результаты): ");
-        Path outputDir = Paths.get(scanner.nextLine().trim());
+//        System.out.print("Введите путь к выходной директории (результаты): ");
+        Path outputDir = Paths.get(OUT_PATH);
 
         try {
             if (!Files.exists(outputDir)) {
@@ -34,9 +38,19 @@ public class DocumentationResourceChecker {
 
             writeListToFile(outputDir.resolve("used_resources.txt"), usedResources);
             writeListToFile(outputDir.resolve("all_images.txt"), allImages);
-            writeListToFile(outputDir.resolve("unused_images.txt"), unusedImages);
 
-            System.out.println("\nГотово! Результаты сохранены в: " + outputDir.toAbsolutePath());
+            if (unusedImages.isEmpty()) {
+                System.out.println("Неиспользуемых изображений нет.");
+            } else {
+                writeListToFile(outputDir.resolve("unused_images.txt"), unusedImages);
+                System.out.println("\nГотово! Результаты сохранены в: " + outputDir.toAbsolutePath());
+                if (unusedImages.size() < 15) {
+                    for (String image : unusedImages) {
+                        System.out.println(image);
+                    }
+                }
+            }
+
         } catch (IOException e) {
             System.err.println("Ошибка при выполнении: " + e.getMessage());
         }
